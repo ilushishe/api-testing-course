@@ -42,7 +42,7 @@ public class HomeWorkTest {
     }
 
     @Test
-    public  void lesson2Ex6() {
+    public void lesson2Ex6() {
         Response response = RestAssured
                 .given()
                 .redirects()
@@ -56,7 +56,30 @@ public class HomeWorkTest {
             System.out.println("There is no Location header");
         } else {
             System.out.println("\n Redicrect url is: " +  redirectUrl);
-
         }
+    }
+
+    @Test
+    public void lesson2Ex7() {
+        int redirectCounter = 0;
+        String url = "https://playground.learnqa.ru/api/long_redirect";
+        while (true) {
+            Response response = RestAssured
+                    .given()
+                    .redirects()
+                    .follow(false)
+                    .when()
+                    .get(url)
+                    .andReturn();
+
+            url = response.getHeader("Location");
+
+            if (response.statusCode()==200) {
+                break;
+            }
+            redirectCounter++;
+        }
+
+        System.out.println("Redicrect count is: " + redirectCounter);
     }
 }

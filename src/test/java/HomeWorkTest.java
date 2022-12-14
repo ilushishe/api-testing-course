@@ -40,4 +40,23 @@ public class HomeWorkTest {
 
         }
     }
+
+    @Test
+    public  void lesson2Ex6() {
+        Response response = RestAssured
+                .given()
+                .redirects()
+                .follow(false)
+                .when()
+                .get("https://playground.learnqa.ru/api/long_redirect")
+                .andReturn();
+
+        String redirectUrl = response.getHeader("Location");
+        if (redirectUrl == null) {
+            System.out.println("There is no Location header");
+        } else {
+            System.out.println("\n Redicrect url is: " +  redirectUrl);
+
+        }
+    }
 }

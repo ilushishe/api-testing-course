@@ -76,7 +76,10 @@ public class HomeWorkTest {
 
             if (response.statusCode()==200) {
                 break;
+            } else if (url == null) {
+                break;
             }
+
             redirectCounter++;
         }
 

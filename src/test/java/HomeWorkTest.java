@@ -2,6 +2,8 @@ import io.restassured.path.json.JsonPath;
 import org.junit.jupiter.api.Test;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
+import java.util.concurrent.TimeUnit;
+
 
 
 public class HomeWorkTest {
@@ -84,5 +86,33 @@ public class HomeWorkTest {
         }
 
         System.out.println("Redicrect count is: " + redirectCounter);
+    }
+
+    @Test
+    public void lesson2Ex8() throws InterruptedException {
+        JsonPath response = RestAssured
+                .get("https://playground.learnqa.ru/ajax/api/longtime_job")
+                .jsonPath();
+
+        String token = response.get("token");
+        int timeOut = response.get("seconds");
+
+        TimeUnit.SECONDS.sleep(timeOut);
+        response = RestAssured
+                .given()
+                .queryParam("token", token)
+                .when()
+                .get("https://playground.learnqa.ru/ajax/api/longtime_job")
+                .jsonPath();
+
+        String status = response.get("status");
+        String result = response.get("result");
+
+        if (status.equals("Job is ready") && result!=null) {
+            System.out.println("Test is passed \nStatus:" + status + "\nResult: " + result);
+        } else {
+            System.out.println("Test FAILED");
+            response.prettyPrint();
+        }
     }
 }

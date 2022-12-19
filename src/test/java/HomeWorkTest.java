@@ -57,7 +57,7 @@ public class HomeWorkTest {
         if (redirectUrl == null) {
             System.out.println("There is no Location header");
         } else {
-            System.out.println("\n Redicrect url is: " +  redirectUrl);
+            System.out.println("\n Redirect url is: " +  redirectUrl);
         }
     }
 
@@ -114,5 +114,10 @@ public class HomeWorkTest {
             System.out.println("Test FAILED");
             response.prettyPrint();
         }
+    }
+
+    @Test
+    public void lesson2Ex9() {
+
     }
 }

